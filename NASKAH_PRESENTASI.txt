@@ -1,0 +1,286 @@
+================================================================================
+  NASKAH PRESENTASI DEMO — REVISI PROYEK PENGOLAHAN CITRA DIGITAL
+  Perbandingan Filter Median vs Gaussian untuk Reduksi Noise Salt-and-Pepper
+================================================================================
+
+Durasi target: 10-15 menit (termasuk demo langsung)
+Catatan: Teks dalam [...] adalah instruksi untuk Anda, bukan untuk dibaca.
+
+
+================================================================================
+  BAGIAN 1 — PEMBUKAAN (1 menit)
+================================================================================
+
+"Selamat pagi/siang Bapak/Ibu Dosen Penguji.
+
+Perkenalkan, kami mempresentasikan hasil revisi proyek Pengolahan Citra Digital
+dengan judul: Perbandingan Filter Median dan Gaussian untuk Reduksi Noise
+Salt-and-Pepper pada Citra Digital Berdasarkan Metrik PSNR dan MSE.
+
+Pada revisi ini, kami telah mengubah program dari yang sebelumnya berbasis
+terminal menjadi aplikasi web interaktif menggunakan framework Streamlit,
+dilengkapi dengan integrasi AI untuk penjelasan otomatis hasil eksperimen."
+
+[Buka browser, tampilkan aplikasi Streamlit di http://localhost:8501]
+
+
+================================================================================
+  BAGIAN 2 — LATAR BELAKANG SINGKAT (1 menit)
+================================================================================
+
+"Noise Salt-and-Pepper adalah jenis derau impulsif yang sering terjadi pada
+citra digital akibat kesalahan transmisi data atau gangguan sensor kamera.
+
+Noise ini memiliki karakteristik unik: piksel yang terdampak berubah secara
+ekstrem menjadi nilai 0 yaitu hitam, yang disebut Pepper, atau nilai 255
+yaitu putih, yang disebut Salt.
+
+Pertanyaan penelitian kami adalah: filter mana yang paling efektif mereduksi
+noise jenis ini — Filter Median yang bersifat non-linier, atau Filter
+Gaussian yang bersifat linier?"
+
+
+================================================================================
+  BAGIAN 3 — DEMO LANGSUNG STEP-BY-STEP (5-6 menit)
+================================================================================
+
+--- STEP 1: Muat Citra dan Tambahkan Noise ---
+
+[Di sidebar, pilih citra Lena, atur noise density ke 20%, klik Mulai Proses]
+
+"Kami menggunakan tiga citra uji standar dalam pengolahan citra: Lena,
+Cameraman, dan Baboon. Semua di-resize ke 512 kali 512 piksel untuk
+konsistensi pengukuran.
+
+Sekarang saya menambahkan noise Salt-and-Pepper dengan densitas 20 persen.
+Artinya, sekitar 52 ribu piksel dari total 262 ribu piksel akan terdampak
+noise secara acak.
+
+Bapak/Ibu bisa lihat di layar — citra sebelah kiri adalah citra asli,
+dan sebelah kanan adalah citra yang sudah terkena noise. Titik-titik hitam
+dan putih yang tersebar acak itulah noise Salt-and-Pepper."
+
+
+--- STEP 2: Hasil Filtering ---
+
+[Scroll ke bawah ke bagian Step 2]
+
+"Sistem kami menguji empat konfigurasi filter secara otomatis:
+  1. Median Filter dengan kernel 3 kali 3
+  2. Median Filter dengan kernel 5 kali 5
+  3. Gaussian Filter dengan kernel 3 kali 3 dan sigma 1.0
+  4. Gaussian Filter dengan kernel 5 kali 5 dan sigma 1.0
+
+Secara visual, Bapak/Ibu sudah bisa melihat perbedaannya. Hasil Median
+Filter terlihat jauh lebih bersih dibandingkan Gaussian Filter yang masih
+menyisakan artefak keabuan di sekitar posisi noise."
+
+
+--- STEP 3: Analisis Metrik ---
+
+[Scroll ke bagian Step 3, tunjukkan kartu metrik dan grafik]
+
+"Untuk membuktikan pengamatan visual tadi secara kuantitatif, kami mengukur
+dua metrik standar:
+
+Pertama, MSE atau Mean Squared Error. MSE menghitung rata-rata kuadrat
+selisih antara citra asli dan citra hasil filter. Rumusnya:
+
+   MSE = rata-rata dari (piksel asli minus piksel hasil) kuadrat
+
+Semakin kecil nilai MSE, semakin mirip citra hasil dengan citra asli.
+
+Kedua, PSNR atau Peak Signal-to-Noise Ratio, dinyatakan dalam satuan
+desibel. Rumusnya:
+
+   PSNR = 10 kali log basis 10 dari (255 kuadrat dibagi MSE)
+
+Semakin tinggi PSNR, semakin baik kualitas restorasi citra.
+Secara umum:
+  - Di atas 30 dB berarti kualitas baik
+  - Antara 20 sampai 30 dB berarti cukup
+  - Di bawah 20 dB berarti kurang baik
+
+Dari grafik dan tabel di layar, terlihat jelas bahwa Median Filter
+mengungguli Gaussian Filter secara signifikan di semua konfigurasi kernel."
+
+
+--- STEP 4: Rekomendasi ---
+
+[Scroll ke bagian Step 4]
+
+"Berdasarkan data eksperimen, sistem secara otomatis merekomendasikan
+filter dengan PSNR tertinggi.
+
+Rekomendasi ini bukan hardcoded, melainkan dihitung secara dinamis
+berdasarkan hasil pengukuran. Jika kita mengubah densitas noise atau
+mengganti citra, rekomendasi akan berubah sesuai data."
+
+
+--- STEP 5: Penjelasan AI ---
+
+[Klik tombol Generate Penjelasan, lalu ajukan pertanyaan di chat terminal]
+
+"Fitur unggulan revisi kami adalah integrasi Google Gemini API.
+
+Ketika tombol Generate Penjelasan ditekan, sistem mengirim data eksperimen
+ke Gemini API dan meminta penjelasan dalam Bahasa Indonesia yang akademis.
+Model yang kami gunakan adalah gemini-1.5-flash karena memiliki kuota
+gratis yang cukup besar, yaitu 1500 request per hari.
+
+Jika API tidak tersedia — misalnya kuota habis atau tidak ada koneksi
+internet — sistem otomatis beralih ke penjelasan fallback yang sudah
+kami siapkan berdasarkan teori dari buku Gonzalez dan Woods. Jadi
+aplikasi tetap berfungsi penuh dalam kondisi offline.
+
+Selain itu, kami juga menyediakan fitur tanya jawab interaktif.
+Saya akan coba tanyakan sesuatu..."
+
+[Ketik pertanyaan di chat input, misalnya:
+ "Kenapa Median lebih baik dari Gaussian untuk noise ini?"]
+
+"Pertanyaan dan jawaban tersimpan dalam riwayat percakapan, sehingga
+pengguna bisa bertanya berkali-kali tanpa kehilangan jawaban sebelumnya."
+
+
+================================================================================
+  BAGIAN 4 — PENJELASAN TEKNIS ARSITEKTUR (2 menit)
+================================================================================
+
+"Dari sisi arsitektur, proyek ini terdiri dari beberapa komponen:
+
+Pertama, filter_comparison.py — ini adalah inti logika pengolahan citra.
+Di dalamnya terdapat fungsi untuk menambahkan noise secara manual
+menggunakan NumPy, fungsi untuk menerapkan filter menggunakan OpenCV,
+dan fungsi untuk menghitung MSE serta PSNR.
+
+Kedua, gemini_helper.py — modul integrasi dengan Google Gemini API.
+Modul ini memiliki mekanisme percobaan bertingkat: jika model pertama
+gagal, sistem otomatis mencoba model berikutnya. Jika semua model
+gagal, sistem beralih ke penjelasan offline.
+
+Ketiga, app.py — antarmuka web Streamlit yang mengintegrasikan kedua
+modul di atas menjadi satu pengalaman interaktif.
+
+Kami juga menulis 8 unit test yang menguji:
+  - Perhitungan MSE untuk citra identik, berbeda, dan kasus overflow
+  - Perhitungan PSNR untuk MSE nol dan normal
+  - Akurasi jumlah noise yang diinjeksikan
+  - Kemampuan Median Filter mereduksi single noise pixel
+  - Kemampuan Gaussian Filter melakukan smoothing
+
+Semua 8 test lulus 100 persen."
+
+
+================================================================================
+  BAGIAN 5 — MENGAPA MEDIAN MENANG (Antisipasi Pertanyaan Dosen) (2 menit)
+================================================================================
+
+[Bagian ini untuk menjawab jika dosen bertanya lebih dalam]
+
+"Mengapa Median Filter selalu menang untuk noise Salt-and-Pepper?
+
+Jawabannya terletak pada sifat dasar kedua filter:
+
+Filter Median adalah filter non-linier berbasis statistik urutan.
+Cara kerjanya: ambil semua piksel di dalam kernel, urutkan nilainya,
+lalu pilih nilai tengah. Karena noise Salt-and-Pepper bernilai 0 atau
+255, nilai-nilai ekstrem ini selalu berada di ujung urutan dan tidak
+pernah terpilih sebagai median. Hasilnya, noise tereliminasi sempurna.
+
+Filter Gaussian adalah filter linier berbasis konvolusi. Cara kerjanya:
+kalikan setiap piksel tetangga dengan bobot Gaussian, lalu jumlahkan.
+Karena ini operasi rata-rata tertimbang, piksel noise yang bernilai 0
+atau 255 tetap ikut dihitung. Akibatnya, noise tidak hilang melainkan
+menyebar ke piksel sekitarnya, menghasilkan efek kabur atau blurring.
+
+Analogi sederhananya begini: jika ada satu orang yang teriak sangat
+keras di ruangan, Median Filter akan mengabaikan teriakan itu dan
+mendengarkan suara mayoritas. Gaussian Filter akan merata-ratakan
+semua suara termasuk teriakan, sehingga semua orang jadi terdengar
+sedikit berteriak."
+
+
+================================================================================
+  BAGIAN 6 — PENGARUH UKURAN KERNEL (Antisipasi Pertanyaan Dosen)
+================================================================================
+
+"Mengapa ada perbedaan antara kernel 3x3 dan 5x5?
+
+Kernel 3x3 hanya melihat 9 piksel tetangga terdekat.
+Kelebihannya: detail tepi dan tekstur citra lebih terjaga.
+Kekurangannya: jika densitas noise tinggi, bisa jadi mayoritas dari
+9 piksel itu sudah terkena noise, sehingga median-nya pun terdistorsi.
+
+Kernel 5x5 melihat 25 piksel tetangga.
+Kelebihannya: lebih tahan terhadap noise densitas tinggi karena area
+referensi lebih luas.
+Kekurangannya: detail halus citra ikut tereliminasi, menghasilkan
+citra yang sedikit lebih kabur.
+
+Inilah trade-off klasik dalam pengolahan citra:
+semakin kuat reduksi noise, semakin banyak detail yang dikorbankan."
+
+
+================================================================================
+  BAGIAN 7 — PENUTUP (30 detik)
+================================================================================
+
+"Demikian presentasi revisi proyek kami. Sebagai kesimpulan:
+
+Filter Median terbukti secara kuantitatif lebih unggul dibandingkan
+Filter Gaussian untuk mereduksi noise Salt-and-Pepper pada semua
+konfigurasi yang diuji.
+
+Revisi utama yang kami lakukan adalah mengubah program dari terminal
+menjadi aplikasi web interaktif, menambahkan integrasi AI untuk
+penjelasan otomatis, dan menyediakan fitur tanya jawab multi-turn.
+
+Terima kasih. Kami siap menerima pertanyaan."
+
+
+================================================================================
+  LAMPIRAN — JAWABAN CEPAT UNTUK PERTANYAAN UMUM DOSEN
+================================================================================
+
+T: "Kenapa pakai Streamlit, bukan Flask atau Django?"
+J: "Streamlit dirancang khusus untuk aplikasi data science dan
+   visualisasi berbasis Python. Tidak perlu menulis HTML, CSS, atau
+   JavaScript secara terpisah. Untuk kebutuhan demo dan prototipe
+   penelitian, Streamlit adalah pilihan paling efisien."
+
+T: "Kenapa pakai Gemini, bukan ChatGPT?"
+J: "Google Gemini menyediakan API gratis dengan kuota 1500 request
+   per hari untuk model Flash. Selain itu, library Python-nya
+   (google-generativeai) ringan dan mudah diintegrasikan. Kami juga
+   menyediakan fallback offline sehingga aplikasi tidak bergantung
+   sepenuhnya pada API eksternal."
+
+T: "Kalau MSE-nya 0, PSNR-nya berapa?"
+J: "PSNR menjadi tak terhingga (infinity), karena rumusnya melibatkan
+   pembagian dengan MSE. Kode kami sudah menangani kasus ini secara
+   eksplisit dengan mengembalikan float infinity."
+
+T: "Seed 42 itu apa?"
+J: "Seed adalah nilai awal untuk generator bilangan acak. Dengan
+   menetapkan seed yang sama (42), setiap kali program dijalankan
+   akan menghasilkan pola noise yang identik. Ini penting untuk
+   reproducibility, agar hasil eksperimen bisa diverifikasi ulang."
+
+T: "Sigma di Gaussian Filter itu apa?"
+J: "Sigma adalah standar deviasi dari distribusi Gaussian yang
+   digunakan sebagai kernel konvolusi. Sigma menentukan seberapa
+   lebar pengaruh pembobotan. Sigma kecil (1.0 seperti yang kami
+   gunakan) menghasilkan smoothing yang ringan, sigma besar
+   menghasilkan blur yang lebih kuat."
+
+T: "Unit test-nya ngetes apa saja?"
+J: "Kami memiliki 8 unit test:
+   - 3 test untuk MSE: citra identik, citra berbeda, dan overflow
+   - 2 test untuk PSNR: MSE nol dan MSE normal
+   - 1 test untuk akurasi noise: memastikan jumlah piksel noise tepat
+   - 1 test untuk Median Filter: memverifikasi single noise dihapus
+   - 1 test untuk Gaussian Filter: memverifikasi smoothing bekerja
+   Semua 8 test lulus 100 persen."
+
+================================================================================

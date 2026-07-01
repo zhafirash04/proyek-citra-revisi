@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.streamlit/secrets.toml
+gemini_error.txt
+.agents/
+.claude/
