@@ -12,7 +12,7 @@ import streamlit as st
 import numpy as np
 import cv2
 import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 from PIL import Image
 import io
 import os
@@ -437,11 +437,7 @@ def process_image(original, noise_density):
 
 
 def create_comparison_chart(results):
-    """Buat bar chart perbandingan PSNR."""
-    fig, ax = plt.subplots(figsize=(8, 4))
-    fig.patch.set_facecolor("#080807")
-    ax.set_facecolor("#111110")
-
+    """Buat bar chart interaktif perbandingan PSNR."""
     labels = [f["label"] for f in results["filters"]]
     psnr_vals = [f["psnr"] for f in results["filters"]]
     best_label = results["best"]["label"]
@@ -455,35 +451,30 @@ def create_comparison_chart(results):
         else:
             colors.append("#CF5B7C")
 
-    bars = ax.barh(labels, psnr_vals, color=colors, height=0.6, edgecolor="#ffffff08")
+    fig = go.Figure(go.Bar(
+        y=labels, x=psnr_vals,
+        orientation='h',
+        marker_color=colors,
+        text=[f"{v:.2f} dB" for v in psnr_vals],
+        textposition='outside',
+        textfont=dict(family="IBM Plex Mono, monospace", size=12, color="#E8E2D6"),
+    ))
 
-    for bar, val in zip(bars, psnr_vals):
-        ax.text(
-            val + 0.3, bar.get_y() + bar.get_height() / 2,
-            f"{val:.2f} dB",
-            va="center", fontsize=9, color="#E8E2D6", fontweight="bold",
-            fontfamily="monospace"
-        )
-
-    ax.set_xlabel("PSNR (dB)", color="#8A8275", fontsize=9)
-    ax.set_title("Perbandingan PSNR per Filter", color="#E8E2D6", fontsize=11, fontweight="bold", pad=12, fontfamily="monospace")
-    ax.tick_params(colors="#8A8275", labelsize=8)
-    for spine in ax.spines.values():
-        spine.set_color("#2A2825")
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-    ax.set_xlim(0, max(psnr_vals) * 1.18)
-
-    fig.tight_layout()
+    fig.update_layout(
+        title=dict(text="Perbandingan PSNR per Filter", font=dict(family="IBM Plex Mono, monospace", size=14, color="#E8E2D6")),
+        xaxis=dict(title="PSNR (dB)", color="#8A8275", gridcolor="#2A2825", range=[0, max(psnr_vals) * 1.2]),
+        yaxis=dict(color="#8A8275"),
+        plot_bgcolor="#111110",
+        paper_bgcolor="#080807",
+        font=dict(family="Outfit, sans-serif", color="#E8E2D6"),
+        margin=dict(l=10, r=30, t=50, b=40),
+        height=300,
+    )
     return fig
 
 
 def create_mse_chart(results):
-    """Buat bar chart perbandingan MSE."""
-    fig, ax = plt.subplots(figsize=(8, 4))
-    fig.patch.set_facecolor("#080807")
-    ax.set_facecolor("#111110")
-
+    """Buat bar chart interaktif perbandingan MSE."""
     labels = [f["label"] for f in results["filters"]]
     mse_vals = [f["mse"] for f in results["filters"]]
     best_label = results["best"]["label"]
@@ -497,27 +488,25 @@ def create_mse_chart(results):
         else:
             colors.append("#CF5B7C")
 
-    bars = ax.barh(labels, mse_vals, color=colors, height=0.6, edgecolor="#ffffff08")
+    fig = go.Figure(go.Bar(
+        y=labels, x=mse_vals,
+        orientation='h',
+        marker_color=colors,
+        text=[f"{v:.2f}" for v in mse_vals],
+        textposition='outside',
+        textfont=dict(family="IBM Plex Mono, monospace", size=12, color="#E8E2D6"),
+    ))
 
-    for bar, val in zip(bars, mse_vals):
-        ax.text(
-            val + max(mse_vals) * 0.02, bar.get_y() + bar.get_height() / 2,
-            f"{val:.2f}",
-            va="center", fontsize=9, color="#E8E2D6", fontweight="bold",
-            fontfamily="monospace"
-        )
-
-    ax.set_xlabel("MSE", color="#8A8275", fontsize=9)
-    ax.set_title("Perbandingan MSE per Filter (lebih rendah = lebih baik)",
-                 color="#E8E2D6", fontsize=11, fontweight="bold", pad=12, fontfamily="monospace")
-    ax.tick_params(colors="#8A8275", labelsize=8)
-    for spine in ax.spines.values():
-        spine.set_color("#2A2825")
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-    ax.set_xlim(0, max(mse_vals) * 1.22)
-
-    fig.tight_layout()
+    fig.update_layout(
+        title=dict(text="Perbandingan MSE per Filter (lebih rendah = lebih baik)", font=dict(family="IBM Plex Mono, monospace", size=14, color="#E8E2D6")),
+        xaxis=dict(title="MSE", color="#8A8275", gridcolor="#2A2825", range=[0, max(mse_vals) * 1.25]),
+        yaxis=dict(color="#8A8275"),
+        plot_bgcolor="#111110",
+        paper_bgcolor="#080807",
+        font=dict(family="Outfit, sans-serif", color="#E8E2D6"),
+        margin=dict(l=10, r=30, t=50, b=40),
+        height=300,
+    )
     return fig
 
 
@@ -735,12 +724,10 @@ def display_step3_metrics(results):
     chart_col1, chart_col2 = st.columns(2)
     with chart_col1:
         fig_psnr = create_comparison_chart(results)
-        st.pyplot(fig_psnr)
-        plt.close(fig_psnr)
+        st.plotly_chart(fig_psnr, use_container_width=True)
     with chart_col2:
         fig_mse = create_mse_chart(results)
-        st.pyplot(fig_mse)
-        plt.close(fig_mse)
+        st.plotly_chart(fig_mse, use_container_width=True)
 
 
 def display_step4_recommendation(results):
