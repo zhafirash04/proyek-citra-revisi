@@ -353,15 +353,250 @@ st.markdown("""
         line-height: 1.5;
     }
 
-    /* ── Fade-in Animation ── */
+    /* ══════════════════════════════════════════════
+       ANIMATION SYSTEM — Staggered Cinematic Load
+       ══════════════════════════════════════════════ */
+
+    /* ── Core Keyframes ── */
     @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(12px); }
+        from { opacity: 0; transform: translateY(20px); }
         to   { opacity: 1; transform: translateY(0); }
     }
 
-    .stMarkdown, .stImage, .stDataFrame {
-        animation: fadeUp 0.5s ease both;
+    @keyframes slideInLeft {
+        from { opacity: 0; transform: translateX(-40px) skewX(2deg); }
+        to   { opacity: 1; transform: translateX(0) skewX(0); }
     }
+
+    @keyframes slideInRight {
+        from { opacity: 0; transform: translateX(40px) skewX(-2deg); }
+        to   { opacity: 1; transform: translateX(0) skewX(0); }
+    }
+
+    @keyframes scaleReveal {
+        from { opacity: 0; transform: scale(0.88); filter: blur(4px); }
+        60%  { opacity: 1; filter: blur(0); }
+        to   { opacity: 1; transform: scale(1); filter: blur(0); }
+    }
+
+    @keyframes filmReveal {
+        from { opacity: 0; transform: scaleY(0.6); transform-origin: top; filter: brightness(2) contrast(0.5); }
+        50%  { filter: brightness(1.2) contrast(0.8); }
+        to   { opacity: 1; transform: scaleY(1); filter: brightness(1) contrast(1); }
+    }
+
+    @keyframes glowPulse {
+        0%, 100% { box-shadow: 0 -4px 20px var(--amber-glow); }
+        50% { box-shadow: 0 -4px 40px rgba(232, 155, 62, 0.25), 0 0 60px rgba(232, 155, 62, 0.08); }
+    }
+
+    @keyframes shimmerLine {
+        from { background-position: -200% 0; }
+        to   { background-position: 200% 0; }
+    }
+
+    @keyframes typeReveal {
+        from { width: 0; opacity: 0; }
+        20%  { opacity: 1; }
+        to   { width: 100%; opacity: 1; }
+    }
+
+    @keyframes counterUp {
+        from { opacity: 0; transform: translateY(8px) scale(0.9); filter: blur(2px); }
+        to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    }
+
+    @keyframes borderGlow {
+        0%, 100% { border-color: var(--border); }
+        50% { border-color: var(--amber-dim); }
+    }
+
+    @keyframes dotPulse {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 0.8; }
+    }
+
+    /* ── Global Entrance — Staggered Cascade ── */
+    .stMarkdown {
+        animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .stImage {
+        animation: filmReveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+        animation-delay: 0.15s;
+    }
+
+    .stDataFrame {
+        animation: fadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+        animation-delay: 0.3s;
+    }
+
+    /* ── Header Cinematic Entrance ── */
+    .main-header {
+        animation: fadeUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .main-header h1 {
+        animation: slideInLeft 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+        animation-delay: 0.2s;
+    }
+
+    .main-header .subtitle {
+        animation: slideInLeft 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+        animation-delay: 0.5s;
+    }
+
+    .main-header::after {
+        animation: shimmerLine 3s ease-in-out infinite;
+        background: linear-gradient(90deg, var(--amber), var(--gold), var(--amber));
+        background-size: 200% 100%;
+    }
+
+    /* ── Step Badge — Reveal with Glow ── */
+    .step-badge {
+        animation: slideInLeft 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .step-badge::after {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%;
+        width: 100%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(232, 155, 62, 0.15), transparent);
+        animation: shimmerLine 2.5s ease-in-out infinite;
+        animation-delay: 1s;
+    }
+
+    /* ── Metric Cards — Staggered Scale Reveal ── */
+    .metric-card {
+        animation: scaleReveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+        transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .metric-card:hover {
+        border-top-color: var(--amber);
+        transform: translateY(-4px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .metric-card.best {
+        border-top-color: var(--gold) !important;
+        animation: scaleReveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) both,
+                   glowPulse 3s ease-in-out infinite;
+        animation-delay: 0.2s, 0.8s;
+    }
+
+    .metric-value {
+        animation: counterUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+        animation-delay: 0.4s;
+    }
+
+    /* ── Film Frames — Cinematic Exposure ── */
+    .film-frame {
+        animation: filmReveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+        transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .film-frame:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.7), 0 0 1px var(--amber-dim);
+        border-color: var(--amber-dim);
+    }
+
+    .film-frame::before, .film-frame::after {
+        animation: dotPulse 4s ease-in-out infinite;
+    }
+
+    .film-frame::after {
+        animation-delay: 2s;
+    }
+
+    /* ── Landing Cards — Dramatic Stagger ── */
+    .landing-card {
+        animation: scaleReveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+        transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .landing-card:hover {
+        border-color: var(--amber);
+        transform: translateY(-6px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .landing-card .lc-num {
+        animation: counterUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+        animation-delay: 0.3s;
+        transition: all 0.3s ease;
+    }
+
+    .landing-card:hover .lc-num {
+        transform: scale(1.15);
+        text-shadow: 0 0 20px var(--amber-glow);
+    }
+
+    /* ── Section Divider — Animated Draw ── */
+    .section-divider {
+        animation: shimmerLine 4s ease-in-out infinite;
+        background: linear-gradient(90deg, var(--amber) 0%, var(--border) 30%, transparent 100%);
+        background-size: 200% 100%;
+    }
+
+    /* ── Recommendation Box — Slide + Border Glow ── */
+    .recommendation-box {
+        animation: slideInLeft 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+        transition: all 0.4s ease;
+    }
+
+    .recommendation-box:hover {
+        border-left-color: var(--amber);
+        box-shadow: -4px 0 20px var(--amber-glow);
+    }
+
+    /* ── AI Terminal — Type Effect ── */
+    .ai-terminal {
+        animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+        transition: all 0.3s ease;
+    }
+
+    .ai-terminal::before {
+        animation: dotPulse 2s ease-in-out infinite;
+    }
+
+    /* ── Plotly Chart Container — Smooth Entry ── */
+    .stPlotlyChart {
+        animation: scaleReveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+        animation-delay: 0.2s;
+    }
+
+    /* ── Stagger Delays via nth-child ── */
+    .stHorizontalBlock > div:nth-child(1) .metric-card,
+    .stHorizontalBlock > div:nth-child(1) .landing-card,
+    .stHorizontalBlock > div:nth-child(1) .film-frame {
+        animation-delay: 0.05s;
+    }
+    .stHorizontalBlock > div:nth-child(2) .metric-card,
+    .stHorizontalBlock > div:nth-child(2) .landing-card,
+    .stHorizontalBlock > div:nth-child(2) .film-frame {
+        animation-delay: 0.15s;
+    }
+    .stHorizontalBlock > div:nth-child(3) .metric-card,
+    .stHorizontalBlock > div:nth-child(3) .landing-card,
+    .stHorizontalBlock > div:nth-child(3) .film-frame {
+        animation-delay: 0.25s;
+    }
+    .stHorizontalBlock > div:nth-child(4) .metric-card,
+    .stHorizontalBlock > div:nth-child(4) .landing-card,
+    .stHorizontalBlock > div:nth-child(4) .film-frame {
+        animation-delay: 0.35s;
+    }
+
+    /* ── Scrollbar — Themed ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-deep); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--amber-dim); }
 </style>
 """, unsafe_allow_html=True)
 
@@ -437,7 +672,7 @@ def process_image(original, noise_density):
 
 
 def create_comparison_chart(results):
-    """Buat bar chart interaktif perbandingan PSNR."""
+    """Buat bar chart interaktif perbandingan PSNR dengan animasi."""
     labels = [f["label"] for f in results["filters"]]
     psnr_vals = [f["psnr"] for f in results["filters"]]
     best_label = results["best"]["label"]
@@ -454,27 +689,40 @@ def create_comparison_chart(results):
     fig = go.Figure(go.Bar(
         y=labels, x=psnr_vals,
         orientation='h',
-        marker_color=colors,
+        marker=dict(
+            color=colors,
+            line=dict(width=1, color='rgba(255,255,255,0.1)'),
+        ),
         text=[f"{v:.2f} dB" for v in psnr_vals],
         textposition='outside',
         textfont=dict(family="IBM Plex Mono, monospace", size=12, color="#E8E2D6"),
+        hovertemplate="<b>%{y}</b><br>PSNR: %{x:.2f} dB<extra></extra>",
     ))
 
     fig.update_layout(
-        title=dict(text="Perbandingan PSNR per Filter", font=dict(family="IBM Plex Mono, monospace", size=14, color="#E8E2D6")),
-        xaxis=dict(title="PSNR (dB)", color="#8A8275", gridcolor="#2A2825", range=[0, max(psnr_vals) * 1.2]),
-        yaxis=dict(color="#8A8275"),
+        title=dict(
+            text="<b>Perbandingan PSNR</b><br><span style='font-size:11px;color:#8A8275;'>Semakin tinggi = semakin baik</span>",
+            font=dict(family="IBM Plex Mono, monospace", size=14, color="#E8E2D6"),
+        ),
+        xaxis=dict(
+            title="PSNR (dB)", color="#8A8275",
+            gridcolor="rgba(42, 40, 37, 0.6)", gridwidth=1,
+            range=[0, max(psnr_vals) * 1.25],
+            zeroline=False,
+        ),
+        yaxis=dict(color="#E8E2D6", tickfont=dict(size=11)),
         plot_bgcolor="#111110",
         paper_bgcolor="#080807",
         font=dict(family="Outfit, sans-serif", color="#E8E2D6"),
-        margin=dict(l=10, r=30, t=50, b=40),
+        margin=dict(l=10, r=60, t=60, b=40),
         height=300,
+        hoverlabel=dict(bgcolor="#1A1918", font_size=13, font_family="IBM Plex Mono, monospace", bordercolor="#E89B3E"),
     )
     return fig
 
 
 def create_mse_chart(results):
-    """Buat bar chart interaktif perbandingan MSE."""
+    """Buat bar chart interaktif perbandingan MSE dengan animasi."""
     labels = [f["label"] for f in results["filters"]]
     mse_vals = [f["mse"] for f in results["filters"]]
     best_label = results["best"]["label"]
@@ -491,21 +739,151 @@ def create_mse_chart(results):
     fig = go.Figure(go.Bar(
         y=labels, x=mse_vals,
         orientation='h',
-        marker_color=colors,
+        marker=dict(
+            color=colors,
+            line=dict(width=1, color='rgba(255,255,255,0.1)'),
+        ),
         text=[f"{v:.2f}" for v in mse_vals],
         textposition='outside',
         textfont=dict(family="IBM Plex Mono, monospace", size=12, color="#E8E2D6"),
+        hovertemplate="<b>%{y}</b><br>MSE: %{x:.2f}<extra></extra>",
     ))
 
     fig.update_layout(
-        title=dict(text="Perbandingan MSE per Filter (lebih rendah = lebih baik)", font=dict(family="IBM Plex Mono, monospace", size=14, color="#E8E2D6")),
-        xaxis=dict(title="MSE", color="#8A8275", gridcolor="#2A2825", range=[0, max(mse_vals) * 1.25]),
-        yaxis=dict(color="#8A8275"),
+        title=dict(
+            text="<b>Perbandingan MSE</b><br><span style='font-size:11px;color:#8A8275;'>Semakin rendah = semakin baik</span>",
+            font=dict(family="IBM Plex Mono, monospace", size=14, color="#E8E2D6"),
+        ),
+        xaxis=dict(
+            title="MSE", color="#8A8275",
+            gridcolor="rgba(42, 40, 37, 0.6)", gridwidth=1,
+            range=[0, max(mse_vals) * 1.3],
+            zeroline=False,
+        ),
+        yaxis=dict(color="#E8E2D6", tickfont=dict(size=11)),
         plot_bgcolor="#111110",
         paper_bgcolor="#080807",
         font=dict(family="Outfit, sans-serif", color="#E8E2D6"),
-        margin=dict(l=10, r=30, t=50, b=40),
+        margin=dict(l=10, r=60, t=60, b=40),
         height=300,
+        hoverlabel=dict(bgcolor="#1A1918", font_size=13, font_family="IBM Plex Mono, monospace", bordercolor="#CF5B7C"),
+    )
+    return fig
+
+
+def create_radar_chart(results):
+    """Buat radar chart perbandingan kinerja Median vs Gaussian."""
+    median_filters = [f for f in results["filters"] if f["filter_type"] == "Median"]
+    gaussian_filters = [f for f in results["filters"] if f["filter_type"] == "Gaussian"]
+
+    max_psnr = max(f["psnr"] for f in results["filters"])
+    max_mse = max(f["mse"] for f in results["filters"])
+    min_mse = min(f["mse"] for f in results["filters"])
+
+    categories = ['PSNR 3×3', 'PSNR 5×5', 'Kualitas MSE 3×3', 'Kualitas MSE 5×5', 'PSNR 3×3']
+
+    def normalize_psnr(val):
+        return (val / max_psnr) * 100 if max_psnr > 0 else 0
+
+    def normalize_mse(val):
+        return ((max_mse - val) / (max_mse - min_mse)) * 100 if max_mse > min_mse else 50
+
+    median_vals = [
+        normalize_psnr(median_filters[0]["psnr"]),
+        normalize_psnr(median_filters[1]["psnr"]),
+        normalize_mse(median_filters[0]["mse"]),
+        normalize_mse(median_filters[1]["mse"]),
+    ]
+    median_vals.append(median_vals[0])
+
+    gaussian_vals = [
+        normalize_psnr(gaussian_filters[0]["psnr"]),
+        normalize_psnr(gaussian_filters[1]["psnr"]),
+        normalize_mse(gaussian_filters[0]["mse"]),
+        normalize_mse(gaussian_filters[1]["mse"]),
+    ]
+    gaussian_vals.append(gaussian_vals[0])
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatterpolar(
+        r=median_vals, theta=categories, fill='toself',
+        name='Median Filter',
+        line=dict(color='#5BA3CF', width=2),
+        fillcolor='rgba(91, 163, 207, 0.15)',
+        hovertemplate="Median<br>%{theta}: %{r:.1f}%<extra></extra>",
+    ))
+    fig.add_trace(go.Scatterpolar(
+        r=gaussian_vals, theta=categories, fill='toself',
+        name='Gaussian Filter',
+        line=dict(color='#CF5B7C', width=2),
+        fillcolor='rgba(207, 91, 124, 0.15)',
+        hovertemplate="Gaussian<br>%{theta}: %{r:.1f}%<extra></extra>",
+    ))
+
+    fig.update_layout(
+        polar=dict(
+            bgcolor='#111110',
+            radialaxis=dict(visible=True, range=[0, 105], showticklabels=False, gridcolor='rgba(42,40,37,0.5)'),
+            angularaxis=dict(color='#8A8275', gridcolor='rgba(42,40,37,0.4)', tickfont=dict(size=10)),
+        ),
+        title=dict(
+            text="<b>Profil Kinerja Filter</b><br><span style='font-size:11px;color:#8A8275;'>Radar perbandingan (semakin luas = semakin baik)</span>",
+            font=dict(family="IBM Plex Mono, monospace", size=14, color="#E8E2D6"),
+        ),
+        showlegend=True,
+        legend=dict(
+            font=dict(color="#E8E2D6", size=11, family="IBM Plex Mono, monospace"),
+            bgcolor="rgba(17,17,16,0.8)",
+            bordercolor="#2A2825", borderwidth=1,
+        ),
+        paper_bgcolor='#080807',
+        font=dict(family="Outfit, sans-serif", color="#E8E2D6"),
+        margin=dict(l=60, r=60, t=70, b=40),
+        height=380,
+        hoverlabel=dict(bgcolor="#1A1918", font_size=12, font_family="IBM Plex Mono, monospace"),
+    )
+    return fig
+
+
+def create_improvement_gauge(results):
+    """Buat gauge chart menunjukkan peningkatan PSNR dari noisy ke filtered."""
+    best = results["best"]
+    improvement = best["psnr"] - results["noisy_psnr"]
+    max_improvement = best["psnr"]
+
+    fig = go.Figure(go.Indicator(
+        mode="gauge+number+delta",
+        value=best["psnr"],
+        number=dict(suffix=" dB", font=dict(size=28, family="IBM Plex Mono, monospace", color="#D4A843")),
+        delta=dict(
+            reference=results["noisy_psnr"],
+            increasing=dict(color="#5BA3CF"),
+            suffix=" dB",
+            font=dict(size=14, family="IBM Plex Mono, monospace"),
+        ),
+        gauge=dict(
+            axis=dict(range=[0, max_improvement * 1.2], tickcolor="#8A8275", tickfont=dict(size=9)),
+            bar=dict(color="#D4A843", thickness=0.7),
+            bgcolor="#1A1918",
+            borderwidth=1, bordercolor="#2A2825",
+            steps=[
+                dict(range=[0, 20], color="rgba(207, 91, 124, 0.15)"),
+                dict(range=[20, 30], color="rgba(232, 155, 62, 0.12)"),
+                dict(range=[30, max_improvement * 1.2], color="rgba(91, 163, 207, 0.12)"),
+            ],
+            threshold=dict(line=dict(color="#E89B3E", width=3), thickness=0.8, value=best["psnr"]),
+        ),
+        title=dict(
+            text=f"<b>{best['label']}</b><br><span style='font-size:11px;color:#8A8275;'>vs citra ber-noise ({results['noisy_psnr']:.1f} dB)</span>",
+            font=dict(size=13, family="IBM Plex Mono, monospace", color="#E8E2D6"),
+        ),
+    ))
+
+    fig.update_layout(
+        paper_bgcolor='#080807',
+        font=dict(family="Outfit, sans-serif", color="#E8E2D6"),
+        margin=dict(l=30, r=30, t=60, b=10),
+        height=280,
     )
     return fig
 
@@ -720,7 +1098,7 @@ def display_step3_metrics(results):
     df = pd.DataFrame(rows)
     st.dataframe(df, use_container_width=True, hide_index=True)
 
-    # Grafik
+    # Grafik — Row 1: PSNR & MSE bars
     chart_col1, chart_col2 = st.columns(2)
     with chart_col1:
         fig_psnr = create_comparison_chart(results)
@@ -728,6 +1106,15 @@ def display_step3_metrics(results):
     with chart_col2:
         fig_mse = create_mse_chart(results)
         st.plotly_chart(fig_mse, use_container_width=True)
+
+    # Grafik — Row 2: Radar & Gauge
+    chart_col3, chart_col4 = st.columns(2)
+    with chart_col3:
+        fig_radar = create_radar_chart(results)
+        st.plotly_chart(fig_radar, use_container_width=True)
+    with chart_col4:
+        fig_gauge = create_improvement_gauge(results)
+        st.plotly_chart(fig_gauge, use_container_width=True)
 
 
 def display_step4_recommendation(results):
@@ -899,7 +1286,7 @@ def main():
         col1, col2, col3 = st.columns(3)
         with col1:
             st.markdown("""
-            <div class="landing-card">
+            <div class="landing-card" style="animation-delay: 0.1s;">
                 <div class="lc-num">1</div>
                 <div class="lc-title">Pilih Citra</div>
                 <div class="lc-desc">Gunakan citra preset (Lena, Cameraman, Baboon) atau upload citra sendiri.</div>
@@ -907,7 +1294,7 @@ def main():
             """, unsafe_allow_html=True)
         with col2:
             st.markdown("""
-            <div class="landing-card">
+            <div class="landing-card" style="animation-delay: 0.25s;">
                 <div class="lc-num">2</div>
                 <div class="lc-title">Atur Noise</div>
                 <div class="lc-desc">Pilih densitas noise Salt-and-Pepper yang ingin diuji (5% &ndash; 50%).</div>
@@ -915,7 +1302,7 @@ def main():
             """, unsafe_allow_html=True)
         with col3:
             st.markdown("""
-            <div class="landing-card">
+            <div class="landing-card" style="animation-delay: 0.4s;">
                 <div class="lc-num">3</div>
                 <div class="lc-title">Analisis</div>
                 <div class="lc-desc">Klik "Mulai Proses" untuk melihat perbandingan filter lengkap.</div>
