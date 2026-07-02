@@ -17,11 +17,14 @@ Perkenalkan, kami mempresentasikan hasil revisi proyek Pengolahan Citra Digital
 dengan judul: Perbandingan Filter Median dan Gaussian untuk Reduksi Noise
 Salt-and-Pepper pada Citra Digital Berdasarkan Metrik PSNR dan MSE.
 
-Pada revisi ini, kami telah mengubah program dari yang sebelumnya berbasis
-terminal menjadi aplikasi web interaktif menggunakan framework Streamlit,
-dilengkapi dengan integrasi AI untuk penjelasan otomatis hasil eksperimen."
+Pada revisi ini, kami telah melakukan perubahan besar yaitu mengubah program
+dari yang sebelumnya berbasis terminal menjadi aplikasi web interaktif
+menggunakan framework Streamlit, dilengkapi dengan grafik interaktif Plotly,
+animasi visual, dan integrasi AI Google Gemini untuk penjelasan otomatis."
 
-[Buka browser, tampilkan aplikasi Streamlit di http://localhost:8501]
+[Buka browser, tampilkan aplikasi Streamlit di URL deploy atau http://localhost:8501]
+[Tunjukkan animasi loading saat halaman pertama kali muncul — landing cards
+ muncul secara berurutan dengan efek fade dan scale]
 
 
 ================================================================================
@@ -33,7 +36,7 @@ citra digital akibat kesalahan transmisi data atau gangguan sensor kamera.
 
 Noise ini memiliki karakteristik unik: piksel yang terdampak berubah secara
 ekstrem menjadi nilai 0 yaitu hitam, yang disebut Pepper, atau nilai 255
-yaitu putih, yang disebut Salt.
+yaitu putih, yang disebut Salt. Piksel lainnya tidak terpengaruh sama sekali.
 
 Pertanyaan penelitian kami adalah: filter mana yang paling efektif mereduksi
 noise jenis ini — Filter Median yang bersifat non-linier, atau Filter
@@ -47,6 +50,7 @@ Gaussian yang bersifat linier?"
 --- STEP 1: Muat Citra dan Tambahkan Noise ---
 
 [Di sidebar, pilih citra Lena, atur noise density ke 20%, klik Mulai Proses]
+[Perhatikan animasi: citra muncul dengan efek film exposure — terang lalu normal]
 
 "Kami menggunakan tiga citra uji standar dalam pengolahan citra: Lena,
 Cameraman, dan Baboon. Semua di-resize ke 512 kali 512 piksel untuk
@@ -58,12 +62,16 @@ noise secara acak.
 
 Bapak/Ibu bisa lihat di layar — citra sebelah kiri adalah citra asli,
 dan sebelah kanan adalah citra yang sudah terkena noise. Titik-titik hitam
-dan putih yang tersebar acak itulah noise Salt-and-Pepper."
+dan putih yang tersebar acak itulah noise Salt-and-Pepper.
+
+Jika kursor diarahkan ke frame gambar, gambar akan membesar sedikit —
+ini fitur hover interaktif dari tema Darkroom Film Lab yang kami buat."
 
 
 --- STEP 2: Hasil Filtering ---
 
 [Scroll ke bawah ke bagian Step 2]
+[Tunjukkan 4 hasil filter yang muncul berurutan dengan animasi stagger]
 
 "Sistem kami menguji empat konfigurasi filter secara otomatis:
   1. Median Filter dengan kernel 3 kali 3
@@ -73,12 +81,16 @@ dan putih yang tersebar acak itulah noise Salt-and-Pepper."
 
 Secara visual, Bapak/Ibu sudah bisa melihat perbedaannya. Hasil Median
 Filter terlihat jauh lebih bersih dibandingkan Gaussian Filter yang masih
-menyisakan artefak keabuan di sekitar posisi noise."
+menyisakan artefak keabuan di sekitar posisi noise.
+
+Yang bertanda trophy adalah filter terbaik berdasarkan PSNR tertinggi."
 
 
 --- STEP 3: Analisis Metrik ---
 
-[Scroll ke bagian Step 3, tunjukkan kartu metrik dan grafik]
+[Scroll ke bagian Step 3]
+[Tunjukkan kartu metrik yang muncul dengan animasi scale-in]
+[Tunjukkan kartu best yang berdenyut dengan efek glow amber]
 
 "Untuk membuktikan pengamatan visual tadi secara kuantitatif, kami mengukur
 dua metrik standar:
@@ -97,9 +109,19 @@ desibel. Rumusnya:
 
 Semakin tinggi PSNR, semakin baik kualitas restorasi citra.
 Secara umum:
-  - Di atas 30 dB berarti kualitas baik
+  - Di atas 40 dB berarti sangat baik
+  - Antara 30 sampai 40 dB berarti baik
   - Antara 20 sampai 30 dB berarti cukup
-  - Di bawah 20 dB berarti kurang baik
+  - Di bawah 20 dB berarti kurang baik"
+
+[Scroll ke grafik Plotly — tunjukkan interaktivitas]
+
+"Grafik yang kami gunakan bersifat interaktif, berbasis library Plotly.
+Bapak/Ibu bisa melakukan hover untuk melihat nilai detail setiap bar,
+zoom in dan out, serta pan untuk eksplorasi data.
+
+Ini berbeda dari grafik statis yang hanya berupa gambar PNG. Grafik
+interaktif memungkinkan pengguna mengeksplorasi data sendiri.
 
 Dari grafik dan tabel di layar, terlihat jelas bahwa Median Filter
 mengungguli Gaussian Filter secara signifikan di semua konfigurasi kernel."
@@ -108,6 +130,7 @@ mengungguli Gaussian Filter secara signifikan di semua konfigurasi kernel."
 --- STEP 4: Rekomendasi ---
 
 [Scroll ke bagian Step 4]
+[Tunjukkan recommendation box yang muncul dengan animasi slide-in dari kiri]
 
 "Berdasarkan data eksperimen, sistem secara otomatis merekomendasikan
 filter dengan PSNR tertinggi.
@@ -119,12 +142,14 @@ mengganti citra, rekomendasi akan berubah sesuai data."
 
 --- STEP 5: Penjelasan AI ---
 
-[Klik tombol Generate Penjelasan, lalu ajukan pertanyaan di chat terminal]
+[Klik tombol Generate Penjelasan]
 
 "Fitur unggulan revisi kami adalah integrasi Google Gemini API.
 
 Ketika tombol Generate Penjelasan ditekan, sistem mengirim data eksperimen
-ke Gemini API dan meminta penjelasan dalam Bahasa Indonesia yang akademis.
+lengkap ke Gemini API — termasuk nilai PSNR, MSE, densitas noise, dan
+filter terbaik — lalu meminta penjelasan dalam Bahasa Indonesia akademis.
+
 Model yang kami gunakan adalah gemini-1.5-flash karena memiliki kuota
 gratis yang cukup besar, yaitu 1500 request per hari.
 
@@ -133,41 +158,69 @@ internet — sistem otomatis beralih ke penjelasan fallback yang sudah
 kami siapkan berdasarkan teori dari buku Gonzalez dan Woods. Jadi
 aplikasi tetap berfungsi penuh dalam kondisi offline.
 
-Selain itu, kami juga menyediakan fitur tanya jawab interaktif.
-Saya akan coba tanyakan sesuatu..."
+Kami juga menyediakan fitur tanya jawab interaktif multi-turn."
 
-[Ketik pertanyaan di chat input, misalnya:
+[Ajukan pertanyaan di chat input, misalnya:
  "Kenapa Median lebih baik dari Gaussian untuk noise ini?"]
 
 "Pertanyaan dan jawaban tersimpan dalam riwayat percakapan, sehingga
 pengguna bisa bertanya berkali-kali tanpa kehilangan jawaban sebelumnya."
+
+[Ajukan pertanyaan kedua untuk menunjukkan multi-turn:
+ "Bagaimana pengaruh ukuran kernel terhadap hasil?"]
+
+"Seperti yang Bapak/Ibu lihat, riwayat percakapan sebelumnya tetap
+ditampilkan di atas, dan jawaban baru muncul di bawahnya. Ini fitur
+multi-turn chat yang memudahkan eksplorasi pengetahuan."
+
+
+--- STEP 6: Download Hasil ---
+
+[Scroll ke bagian Step 6, tunjukkan tiga tombol download]
+
+"Pengguna juga dapat mengunduh hasil eksperimen:
+  - File CSV berisi metrik lengkap
+  - Citra PNG hasil filter terbaik
+  - Citra PNG ber-noise
+
+Ini memudahkan jika ingin menggunakan data untuk laporan atau jurnal."
 
 
 ================================================================================
   BAGIAN 4 — PENJELASAN TEKNIS ARSITEKTUR (2 menit)
 ================================================================================
 
-"Dari sisi arsitektur, proyek ini terdiri dari beberapa komponen:
+"Dari sisi arsitektur, proyek ini terdiri dari tiga modul utama:
 
 Pertama, filter_comparison.py — ini adalah inti logika pengolahan citra.
-Di dalamnya terdapat fungsi untuk menambahkan noise secara manual
-menggunakan NumPy, fungsi untuk menerapkan filter menggunakan OpenCV,
-dan fungsi untuk menghitung MSE serta PSNR.
+Di dalamnya terdapat:
+  - Fungsi add_salt_pepper_noise: menambahkan noise secara manual
+    menggunakan NumPy, dengan metode np.random.choice tanpa pengembalian
+    (replace=False) untuk presisi matematis absolut.
+  - Fungsi apply_median_filter dan apply_gaussian_filter: menerapkan
+    filter menggunakan OpenCV.
+  - Fungsi calculate_mse dan calculate_psnr: menghitung metrik evaluasi
+    dengan konversi ke float64 untuk menghindari integer overflow.
 
 Kedua, gemini_helper.py — modul integrasi dengan Google Gemini API.
-Modul ini memiliki mekanisme percobaan bertingkat: jika model pertama
-gagal, sistem otomatis mencoba model berikutnya. Jika semua model
-gagal, sistem beralih ke penjelasan offline.
+Modul ini memiliki mekanisme percobaan bertingkat: sistem mencoba
+4 model secara berurutan — dimulai dari gemini-1.5-flash yang paling
+stabil. Jika semua model gagal, sistem beralih ke penjelasan offline.
 
 Ketiga, app.py — antarmuka web Streamlit yang mengintegrasikan kedua
-modul di atas menjadi satu pengalaman interaktif.
+modul di atas. File ini juga berisi:
+  - Custom CSS dengan 12 jenis animasi (fadeUp, slideIn, scaleReveal,
+    filmReveal, glowPulse, shimmer, dll.)
+  - Grafik interaktif Plotly (bar chart PSNR dan MSE)
+  - Multi-turn chat AI dengan session state
+  - Fitur download hasil dalam berbagai format
 
 Kami juga menulis 8 unit test yang menguji:
-  - Perhitungan MSE untuk citra identik, berbeda, dan kasus overflow
-  - Perhitungan PSNR untuk MSE nol dan normal
-  - Akurasi jumlah noise yang diinjeksikan
-  - Kemampuan Median Filter mereduksi single noise pixel
-  - Kemampuan Gaussian Filter melakukan smoothing
+  - 3 test untuk MSE: citra identik, citra berbeda, dan overflow handling
+  - 2 test untuk PSNR: MSE nol (infinity) dan MSE normal
+  - 1 test untuk akurasi noise: memastikan jumlah piksel noise tepat
+  - 1 test untuk Median Filter: memverifikasi single noise pixel dihapus
+  - 1 test untuk Gaussian Filter: memverifikasi smoothing bekerja
 
 Semua 8 test lulus 100 persen."
 
@@ -186,19 +239,26 @@ Filter Median adalah filter non-linier berbasis statistik urutan.
 Cara kerjanya: ambil semua piksel di dalam kernel, urutkan nilainya,
 lalu pilih nilai tengah. Karena noise Salt-and-Pepper bernilai 0 atau
 255, nilai-nilai ekstrem ini selalu berada di ujung urutan dan tidak
-pernah terpilih sebagai median. Hasilnya, noise tereliminasi sempurna.
+pernah terpilih sebagai median. Hasilnya, noise tereliminasi sempurna
+tanpa merusak tepi citra.
 
 Filter Gaussian adalah filter linier berbasis konvolusi. Cara kerjanya:
 kalikan setiap piksel tetangga dengan bobot Gaussian, lalu jumlahkan.
 Karena ini operasi rata-rata tertimbang, piksel noise yang bernilai 0
-atau 255 tetap ikut dihitung. Akibatnya, noise tidak hilang melainkan
-menyebar ke piksel sekitarnya, menghasilkan efek kabur atau blurring.
+atau 255 tetap ikut dihitung dalam perhitungan rata-rata. Akibatnya,
+noise tidak hilang melainkan menyebar ke piksel sekitarnya, menghasilkan
+efek kabur atau blurring dan artefak keabuan.
 
 Analogi sederhananya begini: jika ada satu orang yang teriak sangat
 keras di ruangan, Median Filter akan mengabaikan teriakan itu dan
 mendengarkan suara mayoritas. Gaussian Filter akan merata-ratakan
 semua suara termasuk teriakan, sehingga semua orang jadi terdengar
-sedikit berteriak."
+sedikit berteriak.
+
+Catatan penting: ini bukan berarti Gaussian Filter itu buruk. Gaussian
+Filter justru sangat efektif untuk noise Gaussian (random noise yang
+mengikuti distribusi normal), karena rata-rata tertimbang akan meratakan
+variasi acak kecil. Setiap filter optimal untuk jenis noise tertentu."
 
 
 ================================================================================
@@ -209,32 +269,61 @@ sedikit berteriak."
 
 Kernel 3x3 hanya melihat 9 piksel tetangga terdekat.
 Kelebihannya: detail tepi dan tekstur citra lebih terjaga.
-Kekurangannya: jika densitas noise tinggi, bisa jadi mayoritas dari
-9 piksel itu sudah terkena noise, sehingga median-nya pun terdistorsi.
+Kekurangannya: jika densitas noise tinggi (di atas 30 persen), bisa jadi
+mayoritas dari 9 piksel itu sudah terkena noise, sehingga median-nya pun
+terdistorsi.
 
 Kernel 5x5 melihat 25 piksel tetangga.
 Kelebihannya: lebih tahan terhadap noise densitas tinggi karena area
-referensi lebih luas.
+referensi lebih luas — dari 25 piksel, kemungkinan mayoritas bersih
+masih lebih besar.
 Kekurangannya: detail halus citra ikut tereliminasi, menghasilkan
 citra yang sedikit lebih kabur.
 
 Inilah trade-off klasik dalam pengolahan citra:
-semakin kuat reduksi noise, semakin banyak detail yang dikorbankan."
+semakin kuat reduksi noise, semakin banyak detail yang dikorbankan.
+
+Untuk noise densitas rendah sampai sedang (10-20 persen), kernel 3x3
+sudah cukup. Untuk noise densitas tinggi (30 persen ke atas), kernel
+5x5 memberikan hasil lebih stabil."
 
 
 ================================================================================
-  BAGIAN 7 — PENUTUP (30 detik)
+  BAGIAN 7 — PERUBAHAN REVISI (Antisipasi Pertanyaan Dosen)
+================================================================================
+
+"Berikut ringkasan perubahan revisi dari versi sebelumnya:
+
+1. INTERFACE — Dari terminal/CLI menjadi aplikasi web interaktif Streamlit
+   dengan tema Darkroom Film Lab yang custom, termasuk 12 jenis animasi CSS.
+
+2. VISUALISASI — Dari grafik statis PNG menjadi grafik interaktif Plotly
+   yang mendukung hover, zoom, dan pan.
+
+3. AI — Dari tidak ada fitur AI, sekarang terintegrasi Google Gemini API
+   dengan fallback offline dan fitur tanya jawab multi-turn.
+
+4. TESTING — Dari tidak ada unit test, sekarang memiliki 8 test case yang
+   memvalidasi seluruh fungsi komputasi inti.
+
+5. DEPLOYMENT — Dari hanya bisa dijalankan lokal, sekarang terdeploy di
+   Streamlit Cloud dan bisa diakses online tanpa instalasi.
+
+6. REPRODUKSIBILITAS — Menggunakan random seed tetap (42) sehingga hasil
+   eksperimen selalu konsisten dan dapat diverifikasi ulang."
+
+
+================================================================================
+  BAGIAN 8 — PENUTUP (30 detik)
 ================================================================================
 
 "Demikian presentasi revisi proyek kami. Sebagai kesimpulan:
 
 Filter Median terbukti secara kuantitatif lebih unggul dibandingkan
 Filter Gaussian untuk mereduksi noise Salt-and-Pepper pada semua
-konfigurasi yang diuji.
-
-Revisi utama yang kami lakukan adalah mengubah program dari terminal
-menjadi aplikasi web interaktif, menambahkan integrasi AI untuk
-penjelasan otomatis, dan menyediakan fitur tanya jawab multi-turn.
+konfigurasi yang diuji — baik kernel 3x3 maupun 5x5 — karena sifat
+non-linier filter Median yang mampu mengeliminasi nilai outlier tanpa
+merata-ratakan noise ke piksel sekitarnya.
 
 Terima kasih. Kami siap menerima pertanyaan."
 
@@ -246,15 +335,15 @@ Terima kasih. Kami siap menerima pertanyaan."
 T: "Kenapa pakai Streamlit, bukan Flask atau Django?"
 J: "Streamlit dirancang khusus untuk aplikasi data science dan
    visualisasi berbasis Python. Tidak perlu menulis HTML, CSS, atau
-   JavaScript secara terpisah. Untuk kebutuhan demo dan prototipe
-   penelitian, Streamlit adalah pilihan paling efisien."
+   JavaScript secara terpisah — cukup Python saja. Untuk kebutuhan demo
+   dan prototipe penelitian, Streamlit adalah pilihan paling efisien.
+   Streamlit juga menyediakan deployment gratis lewat Streamlit Cloud."
 
 T: "Kenapa pakai Gemini, bukan ChatGPT?"
 J: "Google Gemini menyediakan API gratis dengan kuota 1500 request
-   per hari untuk model Flash. Selain itu, library Python-nya
-   (google-generativeai) ringan dan mudah diintegrasikan. Kami juga
-   menyediakan fallback offline sehingga aplikasi tidak bergantung
-   sepenuhnya pada API eksternal."
+   per hari untuk model gemini-1.5-flash. ChatGPT API tidak memiliki
+   tier gratis. Selain itu, kami menyediakan fallback offline sehingga
+   aplikasi tidak bergantung sepenuhnya pada API eksternal."
 
 T: "Kalau MSE-nya 0, PSNR-nya berapa?"
 J: "PSNR menjadi tak terhingga (infinity), karena rumusnya melibatkan
@@ -265,22 +354,63 @@ T: "Seed 42 itu apa?"
 J: "Seed adalah nilai awal untuk generator bilangan acak. Dengan
    menetapkan seed yang sama (42), setiap kali program dijalankan
    akan menghasilkan pola noise yang identik. Ini penting untuk
-   reproducibility, agar hasil eksperimen bisa diverifikasi ulang."
+   reproducibility, agar hasil eksperimen bisa diverifikasi ulang.
+   Angka 42 sendiri adalah konvensi umum di komunitas ilmiah, merujuk
+   pada novel The Hitchhiker's Guide to the Galaxy."
 
 T: "Sigma di Gaussian Filter itu apa?"
 J: "Sigma adalah standar deviasi dari distribusi Gaussian yang
    digunakan sebagai kernel konvolusi. Sigma menentukan seberapa
-   lebar pengaruh pembobotan. Sigma kecil (1.0 seperti yang kami
-   gunakan) menghasilkan smoothing yang ringan, sigma besar
-   menghasilkan blur yang lebih kuat."
+   lebar pengaruh pembobotan — ibarat seberapa luas area yang
+   dirata-ratakan. Sigma kecil (1.0 seperti yang kami gunakan)
+   menghasilkan smoothing yang ringan, sigma besar menghasilkan
+   blur yang lebih kuat."
 
 T: "Unit test-nya ngetes apa saja?"
-J: "Kami memiliki 8 unit test:
-   - 3 test untuk MSE: citra identik, citra berbeda, dan overflow
-   - 2 test untuk PSNR: MSE nol dan MSE normal
-   - 1 test untuk akurasi noise: memastikan jumlah piksel noise tepat
-   - 1 test untuk Median Filter: memverifikasi single noise dihapus
-   - 1 test untuk Gaussian Filter: memverifikasi smoothing bekerja
+J: "Kami memiliki 8 unit test yang terbagi menjadi 4 kategori:
+   - 3 test untuk MSE: citra identik (=0), citra berbeda (=100),
+     dan overflow handling (uint8: 0 vs 255 = 65025)
+   - 2 test untuk PSNR: MSE nol (=infinity) dan MSE normal
+   - 1 test untuk noise: memastikan jumlah piksel noise tepat
+     sesuai densitas yang ditetapkan
+   - 2 test untuk filter: Median menghapus single noise pixel,
+     Gaussian melakukan smoothing (nilai tengah berkurang)
    Semua 8 test lulus 100 persen."
+
+T: "replace=False di noise injection itu penting kenapa?"
+J: "Tanpa replace=False, ada kemungkinan posisi acak yang sama
+   terpilih dua kali — satu piksel bisa terkena salt lalu ditimpa
+   pepper, atau sebaliknya. Ini menyebabkan jumlah aktual piksel
+   noise tidak sesuai densitas yang ditetapkan. Dengan replace=False,
+   setiap posisi hanya terpilih sekali, sehingga presisi matematis
+   terjamin."
+
+T: "Kenapa pakai float64 di perhitungan MSE?"
+J: "Citra disimpan sebagai uint8 (0-255). Jika kita kuadratkan
+   selisih langsung: (0 - 255)^2 = 65025, tapi uint8 hanya bisa
+   menyimpan 0-255. Ini menyebabkan integer overflow dan hasil
+   perhitungan salah. Konversi ke float64 menghindari masalah ini."
+
+T: "Kenapa pakai opencv-python-headless, bukan opencv-python biasa?"
+J: "Streamlit Cloud berjalan di server Linux yang tidak memiliki
+   library grafis libGL. opencv-python biasa membutuhkan libGL
+   untuk modul GUI (cv2.imshow dll). opencv-python-headless
+   menghilangkan dependensi GUI tersebut. Fungsionalitas pengolahan
+   citra yang kami gunakan (medianBlur, GaussianBlur) identik —
+   tidak ada perbedaan dalam hasil komputasi."
+
+T: "Apa kelebihan grafik Plotly dibanding Matplotlib?"
+J: "Plotly menghasilkan grafik interaktif berbasis JavaScript yang
+   mendukung hover tooltip, zoom, pan, dan download gambar langsung
+   dari browser. Matplotlib menghasilkan gambar statis PNG yang
+   hanya bisa dilihat — tidak bisa dieksplorasi. Untuk web app,
+   Plotly memberikan pengalaman pengguna yang jauh lebih baik."
+
+T: "Kalau dosen/pengguna gak punya API key, apakah aplikasi tetap jalan?"
+J: "Ya, sepenuhnya. Semua fitur pengolahan citra (noise, filter,
+   metrik, grafik, download) berfungsi tanpa API key. Hanya fitur
+   penjelasan AI yang beralih ke mode offline — menggunakan template
+   penjelasan yang sudah kami buat berdasarkan teori dari buku
+   referensi Gonzalez dan Woods. Jadi tidak ada fitur yang hilang."
 
 ================================================================================

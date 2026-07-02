@@ -771,123 +771,6 @@ def create_mse_chart(results):
     return fig
 
 
-def create_radar_chart(results):
-    """Buat radar chart perbandingan kinerja Median vs Gaussian."""
-    median_filters = [f for f in results["filters"] if f["filter_type"] == "Median"]
-    gaussian_filters = [f for f in results["filters"] if f["filter_type"] == "Gaussian"]
-
-    max_psnr = max(f["psnr"] for f in results["filters"])
-    max_mse = max(f["mse"] for f in results["filters"])
-    min_mse = min(f["mse"] for f in results["filters"])
-
-    categories = ['PSNR 3×3', 'PSNR 5×5', 'Kualitas MSE 3×3', 'Kualitas MSE 5×5', 'PSNR 3×3']
-
-    def normalize_psnr(val):
-        return (val / max_psnr) * 100 if max_psnr > 0 else 0
-
-    def normalize_mse(val):
-        return ((max_mse - val) / (max_mse - min_mse)) * 100 if max_mse > min_mse else 50
-
-    median_vals = [
-        normalize_psnr(median_filters[0]["psnr"]),
-        normalize_psnr(median_filters[1]["psnr"]),
-        normalize_mse(median_filters[0]["mse"]),
-        normalize_mse(median_filters[1]["mse"]),
-    ]
-    median_vals.append(median_vals[0])
-
-    gaussian_vals = [
-        normalize_psnr(gaussian_filters[0]["psnr"]),
-        normalize_psnr(gaussian_filters[1]["psnr"]),
-        normalize_mse(gaussian_filters[0]["mse"]),
-        normalize_mse(gaussian_filters[1]["mse"]),
-    ]
-    gaussian_vals.append(gaussian_vals[0])
-
-    fig = go.Figure()
-    fig.add_trace(go.Scatterpolar(
-        r=median_vals, theta=categories, fill='toself',
-        name='Median Filter',
-        line=dict(color='#5BA3CF', width=2),
-        fillcolor='rgba(91, 163, 207, 0.15)',
-        hovertemplate="Median<br>%{theta}: %{r:.1f}%<extra></extra>",
-    ))
-    fig.add_trace(go.Scatterpolar(
-        r=gaussian_vals, theta=categories, fill='toself',
-        name='Gaussian Filter',
-        line=dict(color='#CF5B7C', width=2),
-        fillcolor='rgba(207, 91, 124, 0.15)',
-        hovertemplate="Gaussian<br>%{theta}: %{r:.1f}%<extra></extra>",
-    ))
-
-    fig.update_layout(
-        polar=dict(
-            bgcolor='#111110',
-            radialaxis=dict(visible=True, range=[0, 105], showticklabels=False, gridcolor='rgba(42,40,37,0.5)'),
-            angularaxis=dict(color='#8A8275', gridcolor='rgba(42,40,37,0.4)', tickfont=dict(size=10)),
-        ),
-        title=dict(
-            text="<b>Profil Kinerja Filter</b><br><span style='font-size:11px;color:#8A8275;'>Radar perbandingan (semakin luas = semakin baik)</span>",
-            font=dict(family="IBM Plex Mono, monospace", size=14, color="#E8E2D6"),
-        ),
-        showlegend=True,
-        legend=dict(
-            font=dict(color="#E8E2D6", size=11, family="IBM Plex Mono, monospace"),
-            bgcolor="rgba(17,17,16,0.8)",
-            bordercolor="#2A2825", borderwidth=1,
-        ),
-        paper_bgcolor='#080807',
-        font=dict(family="Outfit, sans-serif", color="#E8E2D6"),
-        margin=dict(l=60, r=60, t=70, b=40),
-        height=380,
-        hoverlabel=dict(bgcolor="#1A1918", font_size=12, font_family="IBM Plex Mono, monospace"),
-    )
-    return fig
-
-
-def create_improvement_gauge(results):
-    """Buat gauge chart menunjukkan peningkatan PSNR dari noisy ke filtered."""
-    best = results["best"]
-    improvement = best["psnr"] - results["noisy_psnr"]
-    max_improvement = best["psnr"]
-
-    fig = go.Figure(go.Indicator(
-        mode="gauge+number+delta",
-        value=best["psnr"],
-        number=dict(suffix=" dB", font=dict(size=28, family="IBM Plex Mono, monospace", color="#D4A843")),
-        delta=dict(
-            reference=results["noisy_psnr"],
-            increasing=dict(color="#5BA3CF"),
-            suffix=" dB",
-            font=dict(size=14, family="IBM Plex Mono, monospace"),
-        ),
-        gauge=dict(
-            axis=dict(range=[0, max_improvement * 1.2], tickcolor="#8A8275", tickfont=dict(size=9)),
-            bar=dict(color="#D4A843", thickness=0.7),
-            bgcolor="#1A1918",
-            borderwidth=1, bordercolor="#2A2825",
-            steps=[
-                dict(range=[0, 20], color="rgba(207, 91, 124, 0.15)"),
-                dict(range=[20, 30], color="rgba(232, 155, 62, 0.12)"),
-                dict(range=[30, max_improvement * 1.2], color="rgba(91, 163, 207, 0.12)"),
-            ],
-            threshold=dict(line=dict(color="#E89B3E", width=3), thickness=0.8, value=best["psnr"]),
-        ),
-        title=dict(
-            text=f"<b>{best['label']}</b><br><span style='font-size:11px;color:#8A8275;'>vs citra ber-noise ({results['noisy_psnr']:.1f} dB)</span>",
-            font=dict(size=13, family="IBM Plex Mono, monospace", color="#E8E2D6"),
-        ),
-    ))
-
-    fig.update_layout(
-        paper_bgcolor='#080807',
-        font=dict(family="Outfit, sans-serif", color="#E8E2D6"),
-        margin=dict(l=30, r=30, t=60, b=10),
-        height=280,
-    )
-    return fig
-
-
 def results_to_csv(results):
     """Konversi hasil ke CSV string."""
     rows = []
@@ -1098,7 +981,7 @@ def display_step3_metrics(results):
     df = pd.DataFrame(rows)
     st.dataframe(df, use_container_width=True, hide_index=True)
 
-    # Grafik — Row 1: PSNR & MSE bars
+    # Grafik
     chart_col1, chart_col2 = st.columns(2)
     with chart_col1:
         fig_psnr = create_comparison_chart(results)
@@ -1106,15 +989,6 @@ def display_step3_metrics(results):
     with chart_col2:
         fig_mse = create_mse_chart(results)
         st.plotly_chart(fig_mse, use_container_width=True)
-
-    # Grafik — Row 2: Radar & Gauge
-    chart_col3, chart_col4 = st.columns(2)
-    with chart_col3:
-        fig_radar = create_radar_chart(results)
-        st.plotly_chart(fig_radar, use_container_width=True)
-    with chart_col4:
-        fig_gauge = create_improvement_gauge(results)
-        st.plotly_chart(fig_gauge, use_container_width=True)
 
 
 def display_step4_recommendation(results):
