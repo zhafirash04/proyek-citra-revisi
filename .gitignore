@@ -4,3 +4,4 @@ __pycache__/
 gemini_error.txt
 .agents/
 .claude/
+output/
