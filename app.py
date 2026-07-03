@@ -144,6 +144,22 @@ st.markdown("""
     .metric-card.best {
         border-top-color: var(--gold) !important;
         box-shadow: 0 -4px 20px var(--amber-glow);
+        position: relative;
+    }
+
+    .metric-card.best::after {
+        content: 'TERBAIK';
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: var(--amber);
+        color: var(--bg);
+        padding: 2px 8px;
+        font-size: 0.55rem;
+        font-weight: 700;
+        font-family: 'IBM Plex Mono', monospace;
+        letter-spacing: 0.05em;
+        border-radius: 3px;
     }
 
     .metric-label {
