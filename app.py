@@ -146,13 +146,15 @@ st.markdown("""
         box-shadow: 0 -4px 20px var(--amber-glow);
         position: relative;
         overflow: visible;
+        z-index: 1;
     }
 
     .metric-card.best::after {
         content: 'TERBAIK';
         position: absolute;
-        top: -10px;
+        top: 8px;
         right: 8px;
+        z-index: 10;
         background: var(--amber);
         color: var(--bg);
         padding: 2px 8px;
