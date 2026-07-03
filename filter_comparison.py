@@ -64,37 +64,38 @@ def add_salt_pepper_noise(image, density):
     Masing-masing memiliki probabilitas density/2.
 
     Parameter:
-        image   : numpy array citra grayscale (2D)
+        image   : numpy array citra grayscale (2D) atau berwarna (3D, H×W×C)
         density : float, proporsi piksel yang terkena noise (0.0 - 1.0)
 
     Return:
         noisy_image : numpy array citra berisi noise
     """
     assert 0 < density <= 1, "Noise density harus lebih dari 0 dan maksimal 1"
-    # Salin citra asli agar tidak mengubah data asal
     noisy_image = image.copy()
-    rows, cols = image.shape
 
-    # Hitung jumlah piksel yang terkena noise
+    if image.ndim == 3:
+        rows, cols, channels = image.shape
+    else:
+        rows, cols = image.shape
+        channels = 0
+
     total_pixels = rows * cols
     num_salt = int(total_pixels * density / 2)
     num_pepper = int(total_pixels * density / 2)
 
-    # Tambahkan noise Salt (piksel putih = 255) dan Pepper (piksel hitam = 0)
-    # Gunakan np.random.choice tanpa pengembalian (replace=False) untuk presisi matematis absolut
-    flat_indices = np.random.choice(total_pixels, num_salt + num_pepper, replace=False)
-    
-    salt_indices = flat_indices[:num_salt]
-    pepper_indices = flat_indices[num_salt:]
-    
-    salt_rows = salt_indices // cols
-    salt_cols = salt_indices % cols
-    noisy_image[salt_rows, salt_cols] = MAX_PIXEL_VALUE
-
-    # Tambahkan noise Pepper (piksel hitam = 0)
-    pepper_rows = pepper_indices // cols
-    pepper_cols = pepper_indices % cols
-    noisy_image[pepper_rows, pepper_cols] = 0
+    if channels > 0:
+        for c in range(channels):
+            flat_indices = np.random.choice(total_pixels, num_salt + num_pepper, replace=False)
+            salt_indices = flat_indices[:num_salt]
+            pepper_indices = flat_indices[num_salt:]
+            noisy_image[salt_indices // cols, salt_indices % cols, c] = MAX_PIXEL_VALUE
+            noisy_image[pepper_indices // cols, pepper_indices % cols, c] = 0
+    else:
+        flat_indices = np.random.choice(total_pixels, num_salt + num_pepper, replace=False)
+        salt_indices = flat_indices[:num_salt]
+        pepper_indices = flat_indices[num_salt:]
+        noisy_image[salt_indices // cols, salt_indices % cols] = MAX_PIXEL_VALUE
+        noisy_image[pepper_indices // cols, pepper_indices % cols] = 0
 
     return noisy_image
 
@@ -108,7 +109,7 @@ def apply_median_filter(image, ksize):
     Filter ini efektif untuk noise impulsif (Salt-and-Pepper).
 
     Parameter:
-        image : numpy array citra grayscale (2D)
+        image : numpy array citra grayscale (2D) atau berwarna (3D, H×W×C)
         ksize : int, ukuran kernel (harus ganjil, misal 3 atau 5)
 
     Return:
@@ -128,7 +129,7 @@ def apply_gaussian_filter(image, ksize, sigma=GAUSSIAN_SIGMA):
     Filter ini lebih efektif untuk noise Gaussian daripada Salt-and-Pepper.
 
     Parameter:
-        image : numpy array citra grayscale (2D)
+        image : numpy array citra grayscale (2D) atau berwarna (3D, H×W×C)
         ksize : int, ukuran kernel (harus ganjil, misal 3 atau 5)
         sigma : float, standar deviasi Gaussian (default: 1.0)
 
@@ -150,8 +151,8 @@ def calculate_mse(original, filtered):
     Semakin kecil MSE, semakin mirip citra hasil filter dengan citra asli.
 
     Parameter:
-        original : numpy array citra asli (2D)
-        filtered : numpy array citra hasil filter (2D)
+        original : numpy array citra asli (2D atau 3D)
+        filtered : numpy array citra hasil filter (2D atau 3D)
 
     Return:
         mse : float, nilai Mean Squared Error

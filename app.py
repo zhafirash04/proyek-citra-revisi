@@ -879,6 +879,16 @@ def render_sidebar():
                 image = uploaded_to_grayscale(uploaded)
                 image_name = os.path.splitext(uploaded.name)[0]
 
+        # ── Mode Warna ──
+        st.markdown("---")
+        st.markdown("### 🎨 Mode Warna")
+        mode_warna = st.radio(
+            "Pilih mode pemrosesan citra:",
+            ["Berwarna", "Grayscale"],
+            index=0,
+            help="Berwarna: proses citra dalam 3 channel RGB. Grayscale: konversi ke abu-abu terlebih dahulu.",
+        )
+
         # ── Parameter Noise ──
         st.markdown("---")
         st.markdown("### 🎛️ Parameter Noise")
@@ -924,7 +934,7 @@ def render_sidebar():
             unsafe_allow_html=True,
         )
 
-    return image, image_color, image_name, noise_density, api_key, process_btn
+    return image, image_color, image_name, noise_density, api_key, process_btn, mode_warna
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -932,12 +942,30 @@ def render_sidebar():
 # ═══════════════════════════════════════════════════════════════════════
 
 def display_step1_images(results):
-    """Tampilkan Step 1: Citra berwarna → Grayscale → Citra bernoise."""
+    """Tampilkan Step 1: Citra asli → Citra bernoise (mendukung mode berwarna dan grayscale)."""
     st.markdown('<div class="step-badge">STEP 1</div>', unsafe_allow_html=True)
     st.markdown("### Citra Asli vs Citra Ber-noise")
 
+    is_color = results.get("is_color", False)
     original_color = results.get("original_color")
-    if original_color is not None:
+
+    if is_color:
+        # Mode Berwarna: tampilkan citra asli berwarna dan noisy berwarna
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown('<div class="film-frame">', unsafe_allow_html=True)
+            st.image(results["original"], caption="Citra Asli (Berwarna 512×512)",
+                     use_container_width=True, clamp=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+        with col2:
+            st.markdown('<div class="film-frame">', unsafe_allow_html=True)
+            cap = (f"Noise Salt-and-Pepper {results['noise_density']:.0%}  |  "
+                   f"PSNR: {results['noisy_psnr']:.2f} dB")
+            st.image(results["noisy"], caption=cap,
+                     use_container_width=True, clamp=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+    elif original_color is not None:
+        # Mode Grayscale dengan citra asal berwarna: tampilkan 3 kolom
         col1, col2, col3 = st.columns(3)
         with col1:
             st.markdown('<div class="film-frame">', unsafe_allow_html=True)
@@ -957,6 +985,7 @@ def display_step1_images(results):
                      use_container_width=True, clamp=True)
             st.markdown('</div>', unsafe_allow_html=True)
     else:
+        # Mode Grayscale murni
         col1, col2 = st.columns(2)
         with col1:
             st.markdown('<div class="film-frame">', unsafe_allow_html=True)
@@ -1005,7 +1034,8 @@ def display_step3_metrics(results):
     """Tampilkan Step 3: Metrik perbandingan."""
     st.markdown('<hr class="section-divider">', unsafe_allow_html=True)
     st.markdown('<div class="step-badge">STEP 3</div>', unsafe_allow_html=True)
-    st.markdown("### Analisis Metrik")
+    mode_label = "Berwarna (RGB)" if results.get("is_color", False) else "Grayscale"
+    st.markdown(f"### Analisis Metrik — Mode {mode_label}")
 
     # Kartu metrik ringkasan dengan gaya kustom
     best = results["best"]
@@ -1192,7 +1222,7 @@ def main():
     """, unsafe_allow_html=True)
 
     # Sidebar
-    image, image_color, image_name, noise_density, api_key, process_btn = render_sidebar()
+    image, image_color, image_name, noise_density, api_key, process_btn, mode_warna = render_sidebar()
 
     # State init
     if "results" not in st.session_state:
@@ -1205,9 +1235,17 @@ def main():
         st.session_state.pop("explanation_source", None)
 
         with st.spinner("⏳ Memproses citra..."):
-            results = process_image(image, noise_density)
+            if mode_warna == "Berwarna" and image_color is not None:
+                # Mode berwarna: proses citra RGB melalui pipeline
+                results = process_image(image_color, noise_density)
+                results["is_color"] = True
+            else:
+                # Mode grayscale: proses citra grayscale (perilaku asli)
+                results = process_image(image, noise_density)
+                results["is_color"] = False
             results["image_name"] = image_name
             results["original_color"] = image_color
+            results["mode_warna"] = mode_warna
             st.session_state["results"] = results
         st.success("Proses selesai!")
 
