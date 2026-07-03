@@ -36,11 +36,19 @@ def download_image(name: str, urls: list, output_dir: str) -> bool:
         filepath = os.path.join(output_dir, f"{name}{ext}")
         try:
             print(f"  Mengunduh {name} dari {url} ...")
-            urllib.request.urlretrieve(url, filepath)
-            print(f"  ✓ Berhasil disimpan: {filepath}")
+            req = urllib.request.Request(
+                url,
+                headers={
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                }
+            )
+            with urllib.request.urlopen(req) as response:
+                with open(filepath, "wb") as f:
+                    f.write(response.read())
+            print(f"  [OK] Berhasil disimpan: {filepath}")
             return True
         except Exception as e:
-            print(f"  ✗ Gagal: {e}")
+            print(f"  [ERROR] Gagal: {e}")
     return False
 
 
@@ -53,7 +61,7 @@ def generate_synthetic_image(name: str, output_dir: str, size: int = 512) -> Non
     try:
         import cv2
     except ImportError:
-        print("  ✗ OpenCV tidak tersedia untuk menyimpan citra sintetis.")
+        print("  [ERROR] OpenCV tidak tersedia untuk menyimpan citra sintetis.")
         return
 
     img = np.zeros((size, size), dtype=np.uint8)
@@ -87,7 +95,7 @@ def generate_synthetic_image(name: str, output_dir: str, size: int = 512) -> Non
 
     filepath = os.path.join(output_dir, f"{name}.png")
     cv2.imwrite(filepath, img)
-    print(f"  ✓ Citra sintetis dibuat: {filepath}")
+    print(f"  [OK] Citra sintetis dibuat: {filepath}")
 
 
 def main():
@@ -118,7 +126,7 @@ def main():
             size_kb = os.path.getsize(fpath) / 1024
             print(f"  {f:30s}  {size_kb:8.1f} KB")
     else:
-        print("  ✗ Tidak ada file citra yang tersedia!")
+        print("  [ERROR] Tidak ada file citra yang tersedia!")
     print()
 
 
