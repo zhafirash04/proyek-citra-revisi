@@ -524,6 +524,26 @@ st.markdown("""
         border-color: var(--amber-dim);
     }
 
+    .film-frame-best-wrapper {
+        position: relative;
+    }
+
+    .film-frame-best-wrapper .best-label {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        z-index: 999;
+        background: var(--amber);
+        color: var(--bg);
+        padding: 3px 10px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        font-family: 'IBM Plex Mono', monospace;
+        letter-spacing: 0.05em;
+        border-radius: 3px;
+        pointer-events: none;
+    }
+
     .film-frame::before, .film-frame::after {
         animation: dotPulse 4s ease-in-out infinite;
     }
@@ -964,11 +984,9 @@ def display_step2_filters(results):
         with cols[i]:
             if is_best:
                 st.markdown(
-                    '<div class="film-frame" style="position:relative;">'
-                    '<span style="position:absolute;top:8px;right:8px;z-index:10;'
-                    'background:#E89B3E;color:#0A0A09;padding:2px 10px;'
-                    'font-size:0.7rem;font-weight:700;font-family:IBM Plex Mono,monospace;'
-                    'letter-spacing:0.05em;border-radius:3px;">TERBAIK</span>',
+                    '<div class="film-frame-best-wrapper">'
+                    '<div class="best-label">TERBAIK</div>'
+                    '<div class="film-frame">',
                     unsafe_allow_html=True,
                 )
             else:
@@ -977,7 +995,10 @@ def display_step2_filters(results):
                        f"PSNR: {f['psnr']:.2f} dB | MSE: {f['mse']:.2f}")
             st.image(f["filtered_image"], caption=caption,
                      use_container_width=True, clamp=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+            if is_best:
+                st.markdown('</div></div>', unsafe_allow_html=True)
+            else:
+                st.markdown('</div>', unsafe_allow_html=True)
 
 
 def display_step3_metrics(results):
