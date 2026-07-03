@@ -943,9 +943,18 @@ def display_step2_filters(results):
     for i, f in enumerate(results["filters"]):
         is_best = (f["label"] == results["best"]["label"])
         with cols[i]:
-            st.markdown('<div class="film-frame">', unsafe_allow_html=True)
-            badge = " (Terbaik)" if is_best else ""
-            caption = (f"{f['label']}{badge}\n"
+            if is_best:
+                st.markdown(
+                    '<div class="film-frame" style="position:relative;">'
+                    '<span style="position:absolute;top:8px;right:8px;z-index:10;'
+                    'background:#E89B3E;color:#0A0A09;padding:2px 10px;'
+                    'font-size:0.7rem;font-weight:700;font-family:IBM Plex Mono,monospace;'
+                    'letter-spacing:0.05em;border-radius:3px;">TERBAIK</span>',
+                    unsafe_allow_html=True,
+                )
+            else:
+                st.markdown('<div class="film-frame">', unsafe_allow_html=True)
+            caption = (f"{f['label']}\n"
                        f"PSNR: {f['psnr']:.2f} dB | MSE: {f['mse']:.2f}")
             st.image(f["filtered_image"], caption=caption,
                      use_container_width=True, clamp=True)
