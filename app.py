@@ -944,7 +944,7 @@ def display_step2_filters(results):
         is_best = (f["label"] == results["best"]["label"])
         with cols[i]:
             st.markdown('<div class="film-frame">', unsafe_allow_html=True)
-            badge = " 🏆" if is_best else ""
+            badge = " (Terbaik)" if is_best else ""
             caption = (f"{f['label']}{badge}\n"
                        f"PSNR: {f['psnr']:.2f} dB | MSE: {f['mse']:.2f}")
             st.image(f["filtered_image"], caption=caption,
@@ -1003,7 +1003,7 @@ def display_step3_metrics(results):
             "Kernel": f"{f['kernel_size']}×{f['kernel_size']}",
             "MSE": round(f["mse"], 2),
             "PSNR (dB)": round(f["psnr"], 2),
-            "Peringkat": "🏆 Terbaik" if is_best else "",
+            "Peringkat": "Terbaik" if is_best else "",
         })
     df = pd.DataFrame(rows)
     st.dataframe(df, use_container_width=True, hide_index=True)
@@ -1160,7 +1160,7 @@ def main():
             results["image_name"] = image_name
             results["original_color"] = image_color
             st.session_state["results"] = results
-        st.success("✅ Proses selesai!", icon="🎉")
+        st.success("Proses selesai!")
 
     # Tampilkan hasil jika ada
     results = st.session_state.get("results")
