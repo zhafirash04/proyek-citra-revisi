@@ -785,20 +785,6 @@ def create_mse_chart(results):
     return fig
 
 
-def results_to_csv(results):
-    """Konversi hasil ke CSV string."""
-    rows = []
-    for f in results["filters"]:
-        rows.append({
-            "Filter": f["filter_type"],
-            "Kernel": f"{f['kernel_size']}x{f['kernel_size']}",
-            "MSE": round(f["mse"], 4),
-            "PSNR (dB)": round(f["psnr"], 4),
-        })
-    df = pd.DataFrame(rows)
-    return df.to_csv(index=False)
-
-
 def image_to_png_bytes(img_array):
     """Konversi numpy array ke PNG bytes untuk download."""
     pil_img = Image.fromarray(img_array)
@@ -1121,17 +1107,8 @@ def display_step6_download(results, image_name):
     st.markdown('<div class="step-badge">STEP 6</div>', unsafe_allow_html=True)
     st.markdown("### 📥 Unduh Hasil")
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2 = st.columns(2)
     with col1:
-        csv_data = results_to_csv(results)
-        st.download_button(
-            "📊 Download Metrik (CSV)",
-            data=csv_data,
-            file_name=f"metrics_{image_name}_{results['noise_density']:.0%}.csv",
-            mime="text/csv",
-            use_container_width=True,
-        )
-    with col2:
         best = results["best"]
         png_data = image_to_png_bytes(best["filtered_image"])
         st.download_button(
@@ -1141,7 +1118,7 @@ def display_step6_download(results, image_name):
             mime="image/png",
             use_container_width=True,
         )
-    with col3:
+    with col2:
         noisy_png = image_to_png_bytes(results["noisy"])
         st.download_button(
             "🖼️ Download Citra Ber-noise",
