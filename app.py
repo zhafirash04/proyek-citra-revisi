@@ -620,6 +620,20 @@ def load_preset_image(name):
     return None
 
 
+def load_preset_image_color(name):
+    """Muat gambar preset dalam format warna (BGR → RGB) untuk ditampilkan."""
+    for ext in ["png", "tif", "tiff", "jpg", "jpeg", "bmp"]:
+        path = os.path.join(IMAGE_DIR, f"{name}.{ext}")
+        if os.path.exists(path):
+            img = cv2.imread(path, cv2.IMREAD_COLOR)
+            if img is not None:
+                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                if img.shape[:2] != (512, 512):
+                    img = cv2.resize(img, (512, 512), interpolation=cv2.INTER_AREA)
+                return img
+    return None
+
+
 def uploaded_to_grayscale(uploaded_file):
     """Konversi file upload ke grayscale numpy array 512x512."""
     pil_img = Image.open(uploaded_file)
@@ -812,6 +826,7 @@ def render_sidebar():
         )
 
         image = None
+        image_color = None
         image_name = "uploaded"
 
         if source == "Citra Preset":
@@ -822,6 +837,7 @@ def render_sidebar():
             }
             selected = st.selectbox("Pilih citra uji:", list(presets.keys()))
             image = load_preset_image(presets[selected])
+            image_color = load_preset_image_color(presets[selected])
             image_name = presets[selected]
             if image is None:
                 st.error(f"Gagal memuat {selected}. Jalankan `download_test_images.py`.")
@@ -831,6 +847,10 @@ def render_sidebar():
                 type=["jpg", "jpeg", "png", "bmp", "tif", "tiff"],
             )
             if uploaded:
+                pil_img = Image.open(uploaded)
+                pil_color = pil_img.convert("RGB").resize((512, 512), Image.LANCZOS)
+                image_color = np.array(pil_color)
+                uploaded.seek(0)
                 image = uploaded_to_grayscale(uploaded)
                 image_name = os.path.splitext(uploaded.name)[0]
 
@@ -879,7 +899,7 @@ def render_sidebar():
             unsafe_allow_html=True,
         )
 
-    return image, image_name, noise_density, api_key, process_btn
+    return image, image_color, image_name, noise_density, api_key, process_btn
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -887,23 +907,44 @@ def render_sidebar():
 # ═══════════════════════════════════════════════════════════════════════
 
 def display_step1_images(results):
-    """Tampilkan Step 1: Citra asli → Citra bernoise."""
+    """Tampilkan Step 1: Citra berwarna → Grayscale → Citra bernoise."""
     st.markdown('<div class="step-badge">STEP 1</div>', unsafe_allow_html=True)
     st.markdown("### Citra Asli vs Citra Ber-noise")
 
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown('<div class="film-frame">', unsafe_allow_html=True)
-        st.image(results["original"], caption="Citra Asli (Grayscale 512×512)",
-                 use_container_width=True, clamp=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-    with col2:
-        st.markdown('<div class="film-frame">', unsafe_allow_html=True)
-        cap = (f"Noise Salt-and-Pepper {results['noise_density']:.0%}  |  "
-               f"PSNR: {results['noisy_psnr']:.2f} dB")
-        st.image(results["noisy"], caption=cap,
-                 use_container_width=True, clamp=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+    original_color = results.get("original_color")
+    if original_color is not None:
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.markdown('<div class="film-frame">', unsafe_allow_html=True)
+            st.image(original_color, caption="Citra Asli (Berwarna)",
+                     use_container_width=True, clamp=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+        with col2:
+            st.markdown('<div class="film-frame">', unsafe_allow_html=True)
+            st.image(results["original"], caption="Grayscale 512×512",
+                     use_container_width=True, clamp=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+        with col3:
+            st.markdown('<div class="film-frame">', unsafe_allow_html=True)
+            cap = (f"Noise Salt-and-Pepper {results['noise_density']:.0%}  |  "
+                   f"PSNR: {results['noisy_psnr']:.2f} dB")
+            st.image(results["noisy"], caption=cap,
+                     use_container_width=True, clamp=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+    else:
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown('<div class="film-frame">', unsafe_allow_html=True)
+            st.image(results["original"], caption="Citra Asli (Grayscale 512×512)",
+                     use_container_width=True, clamp=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+        with col2:
+            st.markdown('<div class="film-frame">', unsafe_allow_html=True)
+            cap = (f"Noise Salt-and-Pepper {results['noise_density']:.0%}  |  "
+                   f"PSNR: {results['noisy_psnr']:.2f} dB")
+            st.image(results["noisy"], caption=cap,
+                     use_container_width=True, clamp=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
 
 def display_step2_filters(results):
@@ -1125,7 +1166,7 @@ def main():
     """, unsafe_allow_html=True)
 
     # Sidebar
-    image, image_name, noise_density, api_key, process_btn = render_sidebar()
+    image, image_color, image_name, noise_density, api_key, process_btn = render_sidebar()
 
     # State init
     if "results" not in st.session_state:
@@ -1140,6 +1181,7 @@ def main():
         with st.spinner("⏳ Memproses citra..."):
             results = process_image(image, noise_density)
             results["image_name"] = image_name
+            results["original_color"] = image_color
             st.session_state["results"] = results
         st.success("✅ Proses selesai!", icon="🎉")
 
