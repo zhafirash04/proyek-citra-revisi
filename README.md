@@ -422,32 +422,52 @@ Urutan percobaan model:
 
 ## Unit Testing
 
-8 test case memvalidasi seluruh fungsi komputasi:
+14 test case memvalidasi seluruh fungsi komputasi, mencakup citra grayscale maupun citra berwarna (color):
 
 ```
-Test 1: test_calculate_mse_identical_images
-        → MSE citra identik harus = 0.0
+--- Grayscale Tests ---
+Test 1:  test_calculate_mse_identical_images
+         → MSE citra identik harus = 0.0
 
-Test 2: test_calculate_mse_different_images
-        → MSE citra berbeda dihitung benar (selisih 10 → MSE = 100.0)
+Test 2:  test_calculate_mse_different_images
+         → MSE citra berbeda dihitung benar (selisih 10 → MSE = 100.0)
 
-Test 3: test_calculate_mse_overflow_handling
-        → Overflow uint8 ditangani (0 vs 255 → MSE = 65025.0, bukan nilai salah)
+Test 3:  test_calculate_mse_overflow_handling
+         → Overflow uint8 ditangani (0 vs 255 → MSE = 65025.0, bukan nilai salah)
 
-Test 4: test_calculate_psnr_zero_mse
-        → PSNR untuk MSE = 0 harus = infinity
+Test 4:  test_calculate_psnr_zero_mse
+         → PSNR untuk MSE = 0 harus = infinity
 
-Test 5: test_calculate_psnr_normal
-        → PSNR dihitung sesuai rumus 10 × log₁₀(255² / MSE)
+Test 5:  test_calculate_psnr_normal
+         → PSNR dihitung sesuai rumus 10 × log₁₀(255² / MSE)
 
-Test 6: test_add_salt_pepper_noise_density
-        → Jumlah piksel noise akurat sesuai densitas (toleransi ±2 piksel)
+Test 6:  test_add_salt_pepper_noise_density
+         → Jumlah piksel noise akurat sesuai densitas (toleransi ±2 piksel)
 
-Test 7: test_apply_median_filter_odd_kernel
-        → Median 3×3 berhasil menghapus single noise pixel (255 → 10)
+Test 7:  test_apply_median_filter_odd_kernel
+         → Median 3×3 berhasil menghapus single noise pixel (255 → 10)
 
-Test 8: test_apply_gaussian_filter_smoothing
-        → Gaussian smoothing mengurangi nilai piksel tengah (255 → < 255)
+Test 8:  test_apply_gaussian_filter_smoothing
+         → Gaussian smoothing mengurangi nilai piksel tengah (255 → < 255)
+
+--- Color Image Tests ---
+Test 9:  test_color_mse_identical
+         → MSE citra berwarna identik harus = 0.0
+
+Test 10: test_color_mse_different
+         → MSE citra berwarna berbeda dihitung benar pada array 3-channel
+
+Test 11: test_color_salt_pepper_noise
+         → Noise injection pada citra berwarna (3-channel) akurat sesuai densitas
+
+Test 12: test_color_median_filter
+         → Median filter berjalan benar pada citra berwarna
+
+Test 13: test_color_gaussian_filter
+         → Gaussian filter berjalan benar pada citra berwarna
+
+Test 14: test_color_full_pipeline
+         → Pipeline lengkap (noise → filter → MSE/PSNR) pada citra berwarna
 ```
 
 Jalankan dengan: `python -m unittest test_metrics.py -v`
