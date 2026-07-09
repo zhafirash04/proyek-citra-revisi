@@ -2,7 +2,7 @@
 
 **Proyek Pengolahan Citra Digital** — Aplikasi web interaktif untuk mengevaluasi performa Filter Median (non-linier) dan Filter Gaussian (linier) dalam mereduksi noise Salt-and-Pepper pada citra grayscale, diukur dengan metrik **PSNR** dan **MSE**.
 
-> **Live Demo:** [Buka Aplikasi di Streamlit Cloud](https://proyek-citra-revisi.streamlit.app)
+> **Live Demo:** [Buka Aplikasi di Streamlit Cloud](https://proyek-citra-noise.streamlit.app/)
 
 ---
 
