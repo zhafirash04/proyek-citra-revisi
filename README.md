@@ -52,7 +52,7 @@ Proyek ini menjawab pertanyaan tersebut melalui eksperimen kuantitatif menggunak
 | **Fallback Offline** | Jika API Gemini tidak tersedia, penjelasan otomatis berbasis teori Gonzalez & Woods tetap ditampilkan |
 | **Upload Citra Custom** | Selain citra preset, pengguna bisa upload citra sendiri (JPG/PNG/BMP/TIFF) |
 | **Download Hasil** | Unduh metrik CSV, citra hasil filter terbaik, dan citra ber-noise dalam format PNG |
-| **Unit Testing** | 8 test case memvalidasi kebenaran MSE, PSNR, noise injection, dan kedua filter |
+| **Unit Testing** | 14 test case memvalidasi kebenaran MSE, PSNR, noise injection, dan kedua filter (grayscale + color) |
 | **Reproduksibilitas** | Random seed tetap (`np.random.seed(42)`) menjamin hasil identik setiap eksekusi |
 
 ---
@@ -99,7 +99,7 @@ proyek-citra-revisi/
 ├── app.py                    # Aplikasi web Streamlit (UI, visualisasi, integrasi)
 ├── filter_comparison.py      # Inti logika: noise injection, filtering, metrik
 ├── gemini_helper.py          # Integrasi Google Gemini API + fallback offline
-├── test_metrics.py           # 8 unit test (MSE, PSNR, noise, filter)
+├── test_metrics.py           # 14 unit test (MSE, PSNR, noise, filter — grayscale + color)
 ├── download_test_images.py   # Download citra uji standar + fallback sintetis
 ├── requirements.txt          # Dependensi Python
 ├── NASKAH_PRESENTASI.txt     # Naskah presentasi untuk demo
@@ -120,7 +120,7 @@ proyek-citra-revisi/
 | `app.py` | Antarmuka web utama: memuat citra, mengatur parameter noise, menampilkan hasil filtering, grafik Plotly interaktif, metrik perbandingan, penjelasan AI, dan fitur download |
 | `filter_comparison.py` | Modul inti pengolahan citra: fungsi noise injection manual dengan NumPy, penerapan filter via OpenCV (`medianBlur`, `GaussianBlur`), dan perhitungan metrik MSE/PSNR |
 | `gemini_helper.py` | Modul integrasi Google Gemini API dengan mekanisme fallback bertingkat (4 model) dan penjelasan offline berbasis teori jika API tidak tersedia |
-| `test_metrics.py` | 8 unit test menggunakan `unittest` untuk memvalidasi kebenaran seluruh fungsi komputasi |
+| `test_metrics.py` | 14 unit test menggunakan `unittest` untuk memvalidasi kebenaran seluruh fungsi komputasi (grayscale + color) |
 | `download_test_images.py` | Mengunduh citra uji standar dari URL publik; jika gagal, membuat citra sintetis geometris sebagai fallback |
 
 ---
